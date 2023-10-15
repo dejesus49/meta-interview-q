@@ -1,25 +1,51 @@
-import logo from './logo.svg';
-import './App.css';
+import "./styles/App.css";
+import List from "./components/List";
+import ActionButtons from "./components/ActionButtons";
+import { useState } from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const initialState = { "list-1": ["1", "2", "3", "4"], "list-2": [] };
+
+export default function App() {
+	const [listState, setListState] = useState(initialState);
+	const [selected, setSelected] = useState([]);
+
+	const changeSelected = (item) => {
+		if (selected.includes(item)) {
+			setSelected(selected.filter((element) => element !== item));
+		} else {
+			setSelected([...selected, item]);
+		}
+	};
+
+	const changeListState = (destination, other) => {
+		selected.forEach((item) => {
+			if (!listState[destination].includes(item)) {
+				setListState((listState) => ({
+					[destination]: [...listState[destination], item].sort(),
+					[other]: listState[other]
+						.filter((element) => element !== item)
+						.sort(),
+				}));
+			}
+		});
+		setSelected([]);
+	};
+
+	return (
+		<div className="App">
+			<List
+				id={"list-1"}
+				listState={listState}
+				selected={selected}
+				changeSelected={changeSelected}
+			/>
+			<ActionButtons changeListState={changeListState} />
+			<List
+				id={"list-2"}
+				listState={listState}
+				selected={selected}
+				changeSelected={changeSelected}
+			/>
+		</div>
+	);
 }
-
-export default App;
